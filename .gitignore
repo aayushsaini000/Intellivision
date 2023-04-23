@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+env/
+# Local development settings
+*.log
+*.sqlite3
+
+# Media and static files
+media/
+static/
+
+# Secret keys and API credentials
+.env
+*.secret_key
+*.api_key
+
+# Other
+node_modules/
+*.swp
+.DS_Store
+.idea/
+.vscode/
