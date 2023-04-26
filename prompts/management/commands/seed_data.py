@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
-from comic.models import LeadingQuestion, StoryStructure, AiIllustrationPrompt
-from comic.utils import StoryTemplate
+from prompts.models import LeadingQuestion, StoryStructure, AiIllustrationPrompt
+from prompts.utils import StoryTemplate
 
 
 class Command(BaseCommand):
