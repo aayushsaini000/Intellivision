@@ -4,12 +4,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import LeadingQuestion, StoryStructure, AiIllustrationPrompt
-from .serializers import LeadingQuestionSerializer
+from .serializers import LeadingQuestionSerializer,StoryStructureSerializer
 
 
 openai.api_key = settings.OPENAI_API_KEY
 
 
+
+class GetStoriesView(APIView):
+    def get(self, request):
+        questions = StoryStructure.objects.all()
+        questions_obj = StoryStructureSerializer(questions,many=True).data
+        return Response(questions_obj, status=status.HTTP_200_OK)
 
 class GeneratePicView(APIView):
     def post(self, request):
@@ -45,8 +51,12 @@ class GeneratePicView(APIView):
 
 class StoryQuestionsView(APIView):
     def get(self, request):
-        questions = LeadingQuestion.objects.all()
-        questions_obj = LeadingQuestionSerializer(questions,many=True).data
+        objid = request.GET.get("id")
+        try:
+            questions = LeadingQuestion.objects.get(id=objid)
+        except Exception:
+            return Response({"error":"no question available by given id"})
+        questions_obj = LeadingQuestionSerializer(questions).data
         return Response(questions_obj, status=status.HTTP_200_OK)
 
 
