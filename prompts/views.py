@@ -13,25 +13,20 @@ openai.api_key = settings.OPENAI_API_KEY
 
 class GeneratePicView(APIView):
     def post(self, request):
-        # Get user inputs from the request body.
-        user_inputs = {}
-        for question in LeadingQuestion.objects.all():
-            answer = request.data.get(question.name, '')
-            user_inputs[question.name] = answer
+        user_inputs = request.data
 
-        # Generate the story and images.
-        response_data = {}
+        response_data = []
+        ai_prompts = AiIllustrationPrompt.objects.all()
+
         for i, line in enumerate(StoryStructure.objects.all()):
             generated_text = line.line.format(**user_inputs)
-            response_data[generated_text] = None
 
-            if i < len(AiIllustrationPrompt.objects.all()):
-                prompt = AiIllustrationPrompt.objects.all()[i].prompt.format(**user_inputs)
+            if i < len(ai_prompts):
+                prompt = ai_prompts[i].prompt.format(**user_inputs)
                 image_url = self.create_image(prompt)
-                response_data[generated_text] = image_url
+                response_data.append({"prompt": generated_text, "image": image_url})
 
         return Response(response_data)
-
 
     def create_image(self, prompt):
         response = openai.Image.create(

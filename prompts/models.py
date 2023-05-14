@@ -1,11 +1,11 @@
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 
 class LeadingQuestion(models.Model):
-    name = models.CharField(max_length=1000)
-    question = models.CharField(max_length=2550)
+    data = models.JSONField()
 
 class StoryStructure(models.Model):
-    line = models.CharField(max_length=2550)
+    line = models.JSONField()
 
 class AiIllustrationPrompt(models.Model):
-    prompt = models.CharField(max_length=2550)
+    prompt = models.JSONField()
