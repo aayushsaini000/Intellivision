@@ -9,17 +9,14 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Store leading questions
         LeadingQuestion.objects.all().delete()  # clear existing data
-        for question in StoryTemplate().leading_questions:
-            LeadingQuestion.objects.create(name=question['name'], question=question['question'])
+        LeadingQuestion.objects.create(data=StoryTemplate().leading_questions)
 
         # Store story structure
         StoryStructure.objects.all().delete()  # clear existing data
-        for line in StoryTemplate().story_structure:
-            StoryStructure.objects.create(line=line)
+        StoryStructure.objects.create(line=StoryTemplate().story_structure)
 
         # Store AI illustration prompts
         AiIllustrationPrompt.objects.all().delete()  # clear existing data
-        for prompt in StoryTemplate().ai_illustration_prompts:
-            AiIllustrationPrompt.objects.create(prompt=prompt)
+        AiIllustrationPrompt.objects.create(prompt=StoryTemplate().ai_illustration_prompts)
 
         self.stdout.write(self.style.SUCCESS('Successfully seeded data.'))

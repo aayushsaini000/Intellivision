@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import LeadingQuestion, StoryStructure, AiIllustrationPrompt
-
+from .serializers import LeadingQuestionSerializer
 
 
 openai.api_key = settings.OPENAI_API_KEY
@@ -15,16 +15,20 @@ class GeneratePicView(APIView):
     def post(self, request):
         user_inputs = request.data
 
+        try:
+            ai_prompt = AiIllustrationPrompt.objects.get(id=request.data.get("id"))
+            story_structure = StoryStructure.objects.get(leading_question=ai_prompt.leading_question)
+        except AiIllustrationPrompt.DoesNotExist:
+            return Response({"error": "No story exists with this ID"})
+        except StoryStructure.DoesNotExist:
+            return Response({"error": "No story exists with this leading_question"})
+
         response_data = []
-        ai_prompts = AiIllustrationPrompt.objects.all()
-
-        for i, line in enumerate(StoryStructure.objects.all()):
-            generated_text = line.line.format(**user_inputs)
-
-            if i < len(ai_prompts):
-                prompt = ai_prompts[i].prompt.format(**user_inputs)
-                image_url = self.create_image(prompt)
-                response_data.append({"prompt": generated_text, "image": image_url})
+        for i, line in enumerate(story_structure.line[:len(ai_prompt.prompt)]):
+            generated_text = line.format(**user_inputs)
+            prompt = ai_prompt.prompt[i].format(**user_inputs)
+            image_url = self.create_image(prompt)
+            response_data.append({"prompt": generated_text, "image": image_url})
 
         return Response(response_data)
 
@@ -41,8 +45,9 @@ class GeneratePicView(APIView):
 
 class StoryQuestionsView(APIView):
     def get(self, request):
-        questions = LeadingQuestion.objects.all().values('name', 'question')
-        return Response(questions, status=status.HTTP_200_OK)
+        questions = LeadingQuestion.objects.all()
+        questions_obj = LeadingQuestionSerializer(questions,many=True).data
+        return Response(questions_obj, status=status.HTTP_200_OK)
 
 
 
