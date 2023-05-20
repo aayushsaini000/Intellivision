@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap" rel="stylesheet" />
+  <title>INTELLIVISION</title>
+  <style>
+    .root {
+      font-family: Lato;
+      background-color: #EEEEEF;
+      font-size: 14px;
+      padding-top: 5px;
+      padding-bottom: 10px;
+    }
+
+    p {
+      color: #212121 !important;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 10px auto 0;
+      text-align: center;
+      background-color: white;
+      padding-bottom: 20px;
+    }
+
+    .header {
+      display: inline-block;
+      font-size: 18px;
+      line-height: 36px;
+      color: #006A4E;
+      font-weight: 400;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .zero {
+      color: #000;
+      font-weight: 900;
+    }
+
+    .main {
+      width: 80%;
+      margin: 50px auto 40px;
+    }
+
+    .main p {
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    .action-button {
+      display: block;
+      font-weight: 600;
+      color: #FFF !important;
+      background: #006A4E;
+      border-radius: 21px;
+      padding: 10px 15px;
+      text-decoration: none;
+      margin: 40px auto;
+      width: fit-content;
+    }
+
+    .foot {
+      background-color: #F8F8F8;
+      width: 90%;
+      margin: auto;
+      padding: 15px;
+    }
+
+    .foot a {
+      text-decoration: none;
+      color: #212121;
+    }
+
+    .item {
+      margin-left: 10px;
+    }
+
+    {% block style %}{% endblock %}
+  </style>
+</head>
+
+<body class="root">
+  <div class="container">
+    <a href="{{ domain }}" class="header">
+      <span style="color: #006A4E;">INTELLIVISION</span>
+    </a>
+    {% block content %}
+    {% endblock %}
+  </div>
+</body>
+
+</html>
