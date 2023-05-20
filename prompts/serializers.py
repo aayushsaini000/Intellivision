@@ -40,3 +40,15 @@ class PromptRecordSerializer(serializers.ModelSerializer):
         fields = (
             "id", "prompt", "image",
         )
+
+
+class TemplateListSerializer(serializers.ModelSerializer):
+    created_date = serializers.DateTimeField(
+        source='created_at', format='%Y-%m-%d'
+    )
+    class Meta:
+        model = StoryStructure
+        fields = (
+            "id", "name", "created_date",
+            "is_active"
+        )

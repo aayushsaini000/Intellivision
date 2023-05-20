@@ -8,7 +8,12 @@ class LeadingQuestion(models.Model):
 class StoryStructure(models.Model):
     line = models.JSONField()
     name = models.CharField(max_length=255,null=True,blank=True)
-    leading_question = models.ForeignKey(LeadingQuestion, on_delete=models.CASCADE,blank=True,null=True)
+    leading_question = models.ForeignKey(
+        LeadingQuestion, on_delete=models.CASCADE,
+        blank=True,null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
 
 class AiIllustrationPrompt(models.Model):

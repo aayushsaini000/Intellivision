@@ -9,7 +9,8 @@ from .models import(
 )
 from .serializers import (
     LeadingQuestionSerializer, StoryStructureSerializer,
-    PromptRecordListSerializer, PromptRecordSerializer
+    PromptRecordListSerializer, PromptRecordSerializer,
+    TemplateListSerializer,
 )
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
@@ -88,13 +89,19 @@ class PromptGenerator(APIView):
     def post(self, request, format=None):
 
         # Get the inputs from the request data
-        input_data = request.data
+        input_data = request.data.get("input_data")
+        template_name = request.data.get("template_name")
 
         # Define the initial prompt with variable placeholders
         initial_prompt = ""
         for variable in input_data:
             initial_prompt += "{" + variable['name'] + "} "
             initial_prompt += variable['question'] + "\n"
+
+        question_instance, _ = LeadingQuestion.objects.get_or_create(
+            data=input_data
+        )
+
 
         # Define the new prompt with improved text and variable placeholders
         new_prompt = "Improve this prompt but don't add any extra characters. Just make it more descriptive. Four sentences are required.\n\n{prompt}".format(
@@ -132,6 +139,12 @@ class PromptGenerator(APIView):
             except KeyError as e:
                 missing_variable = str(e).strip("'")
                 return Response(f"Missing input for variable: {missing_variable}", status=status.HTTP_400_BAD_REQUEST)
+        
+        StoryStructure.objects.create(
+            line=choice,
+            name=template_name,
+            leading_question=question_instance
+        )
 
         # Return the generated prompt choices
         return Response(choices)
@@ -152,3 +165,21 @@ class PromptRecordView(APIView):
             questions_obj = PromptRecordListSerializer(questions,many=True).data
         return Response(questions_obj, status=status.HTTP_200_OK)
 
+
+class TemplateListView(APIView):
+
+    def get(self, request, pk=None):
+        params = request.query_params
+        if params.get("id", None):
+            instance = get_object_or_404(
+                StoryStructure, pk=params.get("id")
+            )
+            serializer = TemplateListSerializer(
+                instance
+            ).data
+        else:
+            queryset = StoryStructure.objects.all()
+            serializer = TemplateListSerializer(
+                queryset, many=True
+            ).data
+        return Response(serializer)
