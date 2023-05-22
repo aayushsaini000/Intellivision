@@ -29,18 +29,21 @@ class SignUpAPIView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        instance, created = User.objects.get_or_create(
+        if User.objects.filter(
             email=serializer.validated_data["email"]
+        ).exists():
+            return Response(
+                {
+                    'message': 'Email already exists.'
+                }, status=400
+            )
+        
+        User.objects.create_superuser(
+            email=serializer.validated_data["email"],
+            password=serializer.validated_data["password"],
         )
-        if created:
-            instance.set_password(serializer.validated_data["password"])
-            instance.save(is_superuser=True)
-            return Response({'message': 'Signup successful.'})
-        return Response(
-            {
-                'message': 'Email already exists.'
-            }, status=400
-        )
+
+        return Response({'message': 'Signup successful.'})
 
 
 class LoginAPIView(generics.CreateAPIView):
