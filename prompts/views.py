@@ -172,7 +172,8 @@ class TemplateListView(APIView):
         params = request.query_params
         if params.get("id", None):
             instance = get_object_or_404(
-                StoryStructure, pk=params.get("id")
+                StoryStructure, pk=params.get("id"),
+                is_active=int(params.get("is_active", 1))
             )
             serializer = TemplateListSerializer(
                 instance
