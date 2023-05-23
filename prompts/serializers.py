@@ -52,3 +52,13 @@ class TemplateListSerializer(serializers.ModelSerializer):
             "id", "name", "created_date",
             "is_active"
         )
+
+class SaveTemplateSerializer(serializers.Serializer):
+    template_name = serializers.CharField()
+    template_text = serializers.ListField()
+    input_data = serializers.ListField()
+
+
+class ManageTemplateSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    is_active = serializers.IntegerField()

@@ -86,13 +86,6 @@ class RestorePassword(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.data["email"]
         user = get_object_or_404(User, email=email)
-        print("JGUIGHUJ", 
-               (
-                            f"{settings.FRONTEND_DOMAIN}/reset-password/?"
-                            f"uid={urlsafe_base64_encode(force_bytes(user.pk))}"
-                            f"&token={account_activation_token.make_token(user)}/"
-                        )
-        )
         try:
             send_mail(
                 "Change your password",

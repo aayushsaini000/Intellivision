@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (
     GeneratePicView, StoryQuestionsView, PromptGenerator,
-    GetStoriesView, PromptRecordView, TemplateListView
+    GetStoriesView, PromptRecordView, ManageTemplateView,
+    SaveTemplateView,
 )
 
 urlpatterns = [
@@ -11,5 +12,6 @@ urlpatterns = [
     path('generate-template/', PromptGenerator.as_view()),
     path('get-stories/', GetStoriesView.as_view()),
     path('prompt-record/', PromptRecordView.as_view()),
-    path('template/', TemplateListView.as_view()),
+    path('template/', ManageTemplateView.as_view()),
+    path('template-save/', SaveTemplateView.as_view()),
 ]

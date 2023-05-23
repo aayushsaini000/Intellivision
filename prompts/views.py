@@ -10,7 +10,8 @@ from .models import(
 from .serializers import (
     LeadingQuestionSerializer, StoryStructureSerializer,
     PromptRecordListSerializer, PromptRecordSerializer,
-    TemplateListSerializer,
+    TemplateListSerializer, SaveTemplateSerializer,
+    ManageTemplateSerializer
 )
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
@@ -90,18 +91,12 @@ class PromptGenerator(APIView):
 
         # Get the inputs from the request data
         input_data = request.data.get("input_data")
-        template_name = request.data.get("template_name")
 
         # Define the initial prompt with variable placeholders
         initial_prompt = ""
         for variable in input_data:
             initial_prompt += "{" + variable['name'] + "} "
             initial_prompt += variable['question'] + "\n"
-
-        question_instance, _ = LeadingQuestion.objects.get_or_create(
-            data=input_data
-        )
-
 
         # Define the new prompt with improved text and variable placeholders
         new_prompt = "Improve this prompt but don't add any extra characters. Just make it more descriptive. Four sentences are required.\n\n{prompt}".format(
@@ -140,14 +135,39 @@ class PromptGenerator(APIView):
                 missing_variable = str(e).strip("'")
                 return Response(f"Missing input for variable: {missing_variable}", status=status.HTTP_400_BAD_REQUEST)
         
-        StoryStructure.objects.create(
-            line=choice,
+        # Return the generated prompt choices
+        return Response(
+            {
+                "data": choices
+            }
+        )
+
+
+class SaveTemplateView(APIView):
+    def post(self, request, format=None):
+
+        serializer = SaveTemplateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Get the inputs from the request data
+        input_data = serializer.validated_data["input_data"]
+        template_name = serializer.validated_data["template_name"]
+        template_text = serializer.validated_data["template_text"]
+
+        question_instance, _ = LeadingQuestion.objects.get_or_create(
+            data=input_data
+        )
+
+        data = StoryStructure.objects.create(
+            line=template_text,
             name=template_name,
             leading_question=question_instance
         )
 
-        # Return the generated prompt choices
-        return Response(choices)
+        return Response(
+            {
+                "message": "Template saved successfully"
+            }
+        )
 
 
 class PromptRecordView(APIView):
@@ -166,21 +186,37 @@ class PromptRecordView(APIView):
         return Response(questions_obj, status=status.HTTP_200_OK)
 
 
-class TemplateListView(APIView):
+class ManageTemplateView(APIView):
 
     def get(self, request, pk=None):
         params = request.query_params
         if params.get("id", None):
             instance = get_object_or_404(
                 StoryStructure, pk=params.get("id"),
-                is_active=int(params.get("is_active", 1))
             )
             serializer = TemplateListSerializer(
                 instance
             ).data
         else:
-            queryset = StoryStructure.objects.all()
+            queryset = StoryStructure.objects.all().order_by("-id")
             serializer = TemplateListSerializer(
                 queryset, many=True
             ).data
         return Response(serializer)
+
+    def post(self, request):
+        serilaizer = ManageTemplateSerializer(data=request.data)
+        serilaizer.is_valid(raise_exception=True)
+        instance = get_object_or_404(
+            StoryStructure, pk=serilaizer.validated_data["id"],
+        )
+        instance.is_active=serilaizer.validated_data["is_active"]
+        instance.save()
+        return Response(
+            {
+                "message": "Updated successfully"
+            }
+        )
+
+
+
