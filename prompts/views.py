@@ -11,7 +11,7 @@ from .serializers import (
     LeadingQuestionSerializer, StoryStructureSerializer,
     PromptRecordListSerializer, PromptRecordSerializer,
     TemplateListSerializer, SaveTemplateSerializer,
-    ManageTemplateSerializer
+    ManageTemplateSerializer, SubmitReviewSerializer
 )
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
@@ -29,7 +29,7 @@ class GetStoriesView(APIView):
             question = get_object_or_404(StoryStructure, pk=params["id"])
             questions_obj = StoryStructureSerializer(question).data
         else:
-            questions = StoryStructure.objects.all()
+            questions = StoryStructure.objects.all().order_by("-id")
             questions_obj = StoryStructureSerializer(questions,many=True).data
         return Response(questions_obj, status=status.HTTP_200_OK)
 
@@ -130,7 +130,11 @@ class PromptGenerator(APIView):
         for choice in response.choices:
             try:
             #     formatted_choice = choice.text.strip().format(**input_dict)
-                choices.append(choice["text"])
+                choices.append(
+                    {
+                        "story_text": choice["text"]
+                    }
+                )
             except KeyError as e:
                 missing_variable = str(e).strip("'")
                 return Response(f"Missing input for variable: {missing_variable}", status=status.HTTP_400_BAD_REQUEST)
@@ -157,7 +161,7 @@ class SaveTemplateView(APIView):
             data=input_data
         )
 
-        data = StoryStructure.objects.create(
+        StoryStructure.objects.create(
             line=template_text,
             name=template_name,
             leading_question=question_instance
@@ -219,4 +223,17 @@ class ManageTemplateView(APIView):
         )
 
 
+class SubmitReviewView(APIView):
+
+    def post(self, request):
+        serializer = SubmitReviewSerializer(
+            data=request.data
+        )
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            {
+                "message": "Sent successfully"
+            }
+        )
+        
 

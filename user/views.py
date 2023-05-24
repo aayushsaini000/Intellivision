@@ -17,6 +17,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
 from .custom_token import account_activation_token
+from django.shortcuts import render
+
 
 
 class SignUpAPIView(generics.CreateAPIView):
@@ -86,6 +88,8 @@ class RestorePassword(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.data["email"]
         user = get_object_or_404(User, email=email)
+        URI = request.build_absolute_uri()
+        BASE_URL = URI.split("auth")[0]
         try:
             send_mail(
                 "Change your password",
@@ -93,9 +97,9 @@ class RestorePassword(APIView):
                 html_message=render_to_string(
                     "mail_change_password.html",
                     {
-                        "domain": settings.FRONTEND_DOMAIN,
+                        "domain": BASE_URL,
                         "reset_link": (
-                            f"{settings.FRONTEND_DOMAIN}/reset-password/?"
+                            f"{BASE_URL}auth/confirm-password/?"
                             f"uid={urlsafe_base64_encode(force_bytes(user.pk))}"
                             f"&token={account_activation_token.make_token(user)}/"
                         ),
@@ -160,3 +164,12 @@ class SetNewPassword(APIView):
         user.set_password(new_password)
         user.save()
         return Response({"message": "Password changed successfully"})
+
+
+def template_view(request):
+    if request.method == 'POST':
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        # Perform validation and save to the database (e.g., using Django's ORM)
+        return render(request, 'confirm_password.html', {'success_message': 'Your password reset successfully'})
+    return render(request, 'confirm_password.html')

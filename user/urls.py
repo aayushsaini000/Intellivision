@@ -6,4 +6,6 @@ urlpatterns = [
     path('login/', views.LoginAPIView.as_view(), name='login'),
     path('forgot-password/', views.RestorePassword.as_view(), name='restore password'),
     path('set-password/', views.ChangePassword.as_view(), name='change password'),
+    path('confirm-password/', views.template_view, name='confirm-password'),
+
 ]

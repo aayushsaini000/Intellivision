@@ -62,3 +62,8 @@ class SaveTemplateSerializer(serializers.Serializer):
 class ManageTemplateSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     is_active = serializers.IntegerField()
+
+
+class SubmitReviewSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    message = serializers.CharField()
