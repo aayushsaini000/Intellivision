@@ -18,8 +18,8 @@ class StoryStructure(models.Model):
 
 class AiIllustrationPrompt(models.Model):
     prompt = models.JSONField()
-    leading_question = models.ForeignKey(
-        LeadingQuestion, on_delete=models.CASCADE,
+    story = models.ForeignKey(
+        StoryStructure, on_delete=models.CASCADE,
         blank=True, null=True
     )
     created_at = models.DateTimeField(auto_now_add=True)

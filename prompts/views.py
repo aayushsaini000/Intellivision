@@ -38,19 +38,34 @@ class GeneratePicView(APIView):
         user_inputs = request.data
 
         try:
-            ai_prompt = AiIllustrationPrompt.objects.get(id=request.data.get("id"))
-            story_structure = StoryStructure.objects.get(leading_question=ai_prompt.leading_question)
+            story_structure = StoryStructure.objects.get(id=request.data.get("id"))
+            ai_prompt = AiIllustrationPrompt.objects.get(story=story_structure)
         except AiIllustrationPrompt.DoesNotExist:
             return Response({"error": "No story exists with this ID"})
         except StoryStructure.DoesNotExist:
             return Response({"error": "No story exists with this leading_question"})
 
         response_data = []
-        for i, line in enumerate(story_structure.line[:len(ai_prompt.prompt)]):
-            generated_text = line.format(**user_inputs)
-            prompt = ai_prompt.prompt[i].format(**user_inputs)
-            image_url = self.create_image(ai_prompt, prompt)
-            response_data.append({"prompt": generated_text, "image": image_url})
+        try:
+            for i, line in enumerate(story_structure.line[:len(ai_prompt.prompt)]):
+                generated_text = line.format(**user_inputs)
+                prompt = ai_prompt.prompt[i].format(**user_inputs)
+                image_url = self.create_image(ai_prompt, prompt)
+                response_data.append({"prompt": generated_text, "image": image_url})
+        except KeyError as e:
+            return Response(
+                {
+                    "message": f"veriable {str(e)} requireds"
+                }
+            )
+
+        except Exception as e:
+            return Response(
+                {
+                    "message": f"{str(e)}"
+                }
+            )
+
 
         return Response(response_data)
 
@@ -161,11 +176,26 @@ class SaveTemplateView(APIView):
             data=input_data
         )
 
-        StoryStructure.objects.create(
-            line=template_text,
+        initial_prompt = ""
+        for variable in input_data:
+            initial_prompt += "{" + variable['name'] + "} "
+            initial_prompt += variable['question'] + "\n"
+
+        try:
+            line = [template_text[0].get("story_text").replace("\n", "")]
+        except:
+            line = [template_text[0].replace("\n", "")]
+
+        story = StoryStructure.objects.create(
+            line=line,
             name=template_name,
             leading_question=question_instance
         )
+        AiIllustrationPrompt.objects.create(
+            prompt=[initial_prompt.replace("\n", "")],
+            story=story
+        )
+        
 
         return Response(
             {

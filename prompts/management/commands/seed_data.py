@@ -13,10 +13,16 @@ class Command(BaseCommand):
 
         # Store story structure
         StoryStructure.objects.all().delete()  # clear existing data
-        StoryStructure.objects.create(line=StoryTemplate().story_structure,leading_question=leadobj)
+        story = StoryStructure.objects.create(
+            line=StoryTemplate().story_structure,
+            leading_question=leadobj
+        )
 
         # Store AI illustration prompts
         AiIllustrationPrompt.objects.all().delete()  # clear existing data
-        AiIllustrationPrompt.objects.create(prompt=StoryTemplate().ai_illustration_prompts,leading_question=leadobj)
+        AiIllustrationPrompt.objects.create(
+            prompt=StoryTemplate().ai_illustration_prompts,
+            story=story
+        )
 
         self.stdout.write(self.style.SUCCESS('Successfully seeded data.'))
