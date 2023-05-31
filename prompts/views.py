@@ -114,7 +114,7 @@ class PromptGenerator(APIView):
             initial_prompt += variable['question'] + "\n"
 
         # Define the new prompt with improved text and variable placeholders
-        new_prompt = "Improve this prompt but don't add any extra characters. Just make it more descriptive. Four sentences are required.\n\n{prompt}".format(
+        new_prompt = "Improve this prompt but don't add any extra characters. Just make it more descriptive. Four sentences with lowercase words only are required with the given keywords in curly braces. Make sure do not add any new keyword in curly braces other then given keywords\n\n{prompt}".format(
             prompt=initial_prompt
         )
 
