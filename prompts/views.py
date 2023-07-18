@@ -33,6 +33,7 @@ class GetStoriesView(APIView):
             questions_obj = StoryStructureSerializer(questions,many=True).data
         return Response(questions_obj, status=status.HTTP_200_OK)
 
+
 class GeneratePicView(APIView):
     def post(self, request):
         user_inputs = request.data
@@ -50,8 +51,9 @@ class GeneratePicView(APIView):
             for i, line in enumerate(story_structure.line[:len(ai_prompt.prompt)]):
                 generated_text = line.format(**user_inputs)
                 prompt = ai_prompt.prompt[i].format(**user_inputs)
+                # image_url = self.create_image(ai_prompt, generated_text)
                 image_url = self.create_image(ai_prompt, prompt)
-                response_data.append({"prompt": generated_text, "image": image_url})
+                response_data.append({"prompt": prompt, "image": image_url})
         except KeyError as e:
             return Response(
                 {
@@ -66,10 +68,10 @@ class GeneratePicView(APIView):
                 }
             )
 
-
         return Response(response_data)
 
     def create_image(self, instance, prompt):
+
         response = openai.Image.create(
             prompt=prompt,
             n=1,
@@ -86,7 +88,6 @@ class GeneratePicView(APIView):
         return image_url
 
 
-
 class StoryQuestionsView(APIView):
     def get(self, request):
         objid = request.GET.get("id")
@@ -96,9 +97,6 @@ class StoryQuestionsView(APIView):
             return Response({"error":"no question available by given id"})
         questions_obj = LeadingQuestionSerializer(questions).data
         return Response(questions_obj, status=status.HTTP_200_OK)
-
-
-
 
 
 class PromptGenerator(APIView):
@@ -265,5 +263,3 @@ class SubmitReviewView(APIView):
                 "message": "Sent successfully"
             }
         )
-        
-

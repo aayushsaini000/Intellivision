@@ -7,4 +7,10 @@ from .models import(
 admin.site.register(LeadingQuestion)
 admin.site.register(StoryStructure)
 admin.site.register(AiIllustrationPrompt)
-admin.site.register(PromptRecord)
+
+@admin.register(PromptRecord)
+class PromptAdmin(admin.ModelAdmin):
+    list_display = (
+        "illustration_prompt", "prompt",
+        "image"
+    )
