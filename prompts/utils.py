@@ -26,5 +26,5 @@ class StoryTemplate:
             "{mean_character_type} stealing {required_thing} for {activity} outside of {landmark} in {location} in the style of a coloring book illustration black and white only",
             "cartoon {savior_creature} super hero really cool in the style of a coloring book illustration black and white only",
             "{mean_character_name} the {mean_character_type} running away from {breed} dog {character} and {savior} in {location} in the style of a coloring book illustration black and white only",
-            "{character} and {savior} high-fiving in front of the {landmark} after retrieving the {required_thing} in the style of a coloring book illustration"
+            "{breed} dog {character} and savior {savior_creature} {savior} high-fiving in front of the {landmark} after retrieving the {required_thing} in the style of a coloring book illustration"
         ]
