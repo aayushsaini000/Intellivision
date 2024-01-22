@@ -37,7 +37,7 @@ class GetStoriesView(APIView):
 class GeneratePicView(APIView):
     def post(self, request):
         user_inputs = request.data
-
+        email = request.data.get("email")
         try:
             story_structure = StoryStructure.objects.get(id=request.data.get("id"))
             ai_prompt = AiIllustrationPrompt.objects.get(story=story_structure)
@@ -52,7 +52,7 @@ class GeneratePicView(APIView):
                 generated_text = line.format(**user_inputs)
                 prompt = ai_prompt.prompt[i].format(**user_inputs)
                 # image_url = self.create_image(ai_prompt, generated_text)
-                image_url = self.create_image(ai_prompt, prompt)
+                image_url = self.create_image(ai_prompt, prompt,email)
                 response_data.append({"prompt": prompt, "image": image_url})
         except KeyError as e:
             return Response(
@@ -70,7 +70,7 @@ class GeneratePicView(APIView):
 
         return Response(response_data)
 
-    def create_image(self, instance, prompt):
+    def create_image(self, instance, prompt, email):
 
         response = openai.Image.create(
             prompt=prompt,
@@ -82,7 +82,8 @@ class GeneratePicView(APIView):
         image_file = ContentFile(content)
         record = PromptRecord.objects.create(
             illustration_prompt=instance,
-            prompt=prompt
+            prompt=prompt,
+            email = email
         )
         record.image.save(f"prompt_{instance.id}.jpg", image_file)
         return image_url
@@ -118,7 +119,7 @@ class PromptGenerator(APIView):
 
         # Generate multiple prompts with the improved text
         response = openai.Completion.create(
-            engine="text-davinci-002",
+            engine="gpt-3.5-turbo-instruct",
             prompt=new_prompt,
             max_tokens=64,
             n=2,  # Request 2 completions
@@ -263,3 +264,135 @@ class SubmitReviewView(APIView):
                 "message": "Sent successfully"
             }
         )
+
+
+
+
+from django.core.mail import EmailMessage
+from django.http import HttpResponse
+from django.utils import timezone
+from datetime import timedelta
+from .models import PromptRecord
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Image
+import io
+import os
+from django.conf import settings
+
+# def generate_pdf(records):
+#     buffer = io.BytesIO()
+#     c = canvas.Canvas(buffer, pagesize=letter)
+#     width, height = letter
+
+#     x_offset = 50
+#     y_offset = height - 50
+#     image_height = 150
+
+#     for record in records:
+#         c.drawString(x_offset, y_offset, record['prompt'])
+#         y_offset -= 20
+
+#         image_path = os.path.join(settings.MEDIA_ROOT, record['image'])
+#         try:
+#             img = Image(image_path)
+#             img.drawHeight = image_height
+#             img.drawWidth = image_height * img.imageWidth / img.imageHeight
+#             img.wrapOn(c, width, height)
+#             img.drawOn(c, x_offset, y_offset - img.drawHeight)
+#             y_offset -= (img.drawHeight + 20)
+#         except Exception as e:
+#             print(f"Error loading image {image_path}: {e}")
+
+#         if y_offset < 100:
+#             c.showPage()
+#             y_offset = height - 50
+
+#     c.save()
+#     buffer.seek(0)
+#     return buffer
+
+
+
+def pdf_view(request, email):
+    time_threshold = timezone.now() - timedelta(seconds=300)
+    records = PromptRecord.objects.filter(email=email, created_at__gt=time_threshold).order_by('-created_at').values('prompt', 'image')
+    # print("37333",list(records))
+    # Assuming records are in the format you provided and images are accessible
+    pdf = generate_pdf(list(records))
+    # print("37666",pdf)
+    # Email setup
+    subject = 'Your story file'
+    message = 'Please find attached the PDF of your Story.'
+    email = EmailMessage(subject, message, settings.EMAIL_HOST_USER, [email])
+    email.attach('prompt_records.pdf', pdf.getvalue(), 'application/pdf')
+    email.send()
+
+    return HttpResponse("Email sent successfully.")
+
+
+
+
+
+
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Image
+import io
+import os
+from django.conf import settings
+
+def generate_pdf(records):
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    x_offset = 50
+    y_offset = height - 50
+    image_height = 150
+
+    for record in records:
+        c.drawString(x_offset, y_offset, record['prompt'])
+        y_offset -= 20  # Adjust based on the height of your text
+
+        image_path = os.path.join(settings.MEDIA_ROOT, record['image'])
+        try:
+            img = Image(image_path)
+            # Maintain aspect ratio but increase width by 50%
+            aspect_ratio = img.imageWidth / img.imageHeight
+            img.drawHeight = image_height
+            img.drawWidth = img.drawHeight * aspect_ratio * 1.5  # Increase width by 50%
+            img.wrapOn(c, width, height)
+            img.drawOn(c, x_offset, y_offset - img.drawHeight)
+            y_offset -= (img.drawHeight + 20)  # Adjust for spacing between images
+        except Exception as e:
+            print(f"Error loading image {image_path}: {e}")
+
+        if y_offset < 100:  # Arbitrary threshold for page break
+            c.showPage()
+            y_offset = height - 50  # Reset y_offset for the new page
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
+
+
+# from django.http import HttpResponse, FileResponse
+# from django.utils import timezone
+# from datetime import timedelta
+# from .models import PromptRecord
+# import io
+
+
+# def pdf_view(request, email):
+#     time_threshold = timezone.now() - timedelta(seconds=60000000000)
+#     records = PromptRecord.objects.filter(email=email, created_at__gt=time_threshold).order_by('-created_at').values('prompt', 'image')
+
+#     # Generate PDF from records
+#     pdf_buffer = generate_pdf(list(records))
+
+#     # Instead of sending an email, return the PDF as a response for the user to download
+#     # Set the content type and disposition to indicate attachment
+#     response = FileResponse(pdf_buffer, as_attachment=True, filename='prompt_records.pdf', content_type='application/pdf')
+#     return response

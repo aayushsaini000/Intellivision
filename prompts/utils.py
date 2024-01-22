@@ -21,11 +21,10 @@ class StoryTemplate:
             "Happy as can be, {character} was able to go {activity} again!",
         ]
         self.ai_illustration_prompts = [
-            "{breed} dog {activity} in {location} in front of the {landmark} in the style of a coloring book illustration",
+            "cartoon very happy {breed} dog named {character} holding {required_thing} far away in a beautiful sunset in the style of a coloring book illustration. all black and white",
+            "{breed} dog {character} {activity} in {location} in front of the {landmark} in the style of a coloring book illustration",
             "{mean_character_type} stealing {required_thing} for {activity} outside of {landmark} in {location} in the style of a coloring book illustration black and white only",
             "cartoon {savior_creature} super hero really cool in the style of a coloring book illustration black and white only",
-            "cartoon very happy {breed} holding {required_thing} far away in a beautiful sunset in the style of a coloring book illustration. all black and white",
-            "{character} and {savior} high-fiving in front of the {landmark} after retrieving the {required_thing} in the style of a coloring book illustration",
-            "{mean_character_name} the {mean_character_type} running away from {character} and {savior} in {location} after stealing the {required_thing} in the style of a coloring book illustration black and white only",
-
+            "{mean_character_name} the {mean_character_type} running away from {breed} dog {character} and {savior} in {location} in the style of a coloring book illustration black and white only",
+            "{character} and {savior} high-fiving in front of the {landmark} after retrieving the {required_thing} in the style of a coloring book illustration"
         ]

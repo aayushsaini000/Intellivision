@@ -1,28 +1,70 @@
+import os
+import subprocess
+
 from django.core.management.base import BaseCommand
-from prompts.models import LeadingQuestion, StoryStructure, AiIllustrationPrompt
-from prompts.utils import StoryTemplate
+from django.db import connection
 
 
 class Command(BaseCommand):
-    help = 'Seed the database with initial data'
+    help = 'Drops all tables and restores a PostgreSQL database from a text dump file'
+
+    def add_arguments(self, parser):
+        parser.add_argument('dump_path', type=str, help='The path to the dump file')
+        parser.add_argument('--dbname', type=str, help='The database name', default=os.environ.get('NAME'))
+        parser.add_argument('--user', type=str, help='The database user', default=os.environ.get('USER'))
+        # You can also add --host and --port arguments if needed
+
+    def drop_and_create_database(self, db_name, db_user):
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(f"DROP DATABASE {db_name}")
+            except:
+                pass
+            cursor.execute(f"CREATE DATABASE {db_name}")
+            cursor.execute(f"GRANT ALL ON DATABASE {db_name} TO {db_user}")
+
+    def restore_database(self, dump_path, dbname=os.environ.get('NAME'), user=os.environ.get('USER')):
+        restore_command = f'psql -U {user} -d {dbname} -f {dump_path}'
+        try:
+            subprocess.run(restore_command, shell=True, check=True)
+            self.stdout.write(self.style.SUCCESS(f'Successfully restored database "{dbname}" from "{dump_path}".'))
+        except subprocess.CalledProcessError as e:
+            self.stdout.write(self.style.ERROR('Failed to restore the database.'))
+            self.stdout.write(self.style.ERROR(str(e)))
 
     def handle(self, *args, **options):
-        # Store leading questions
-        LeadingQuestion.objects.all().delete()  # clear existing data
-        leadobj = LeadingQuestion.objects.create(data=StoryTemplate().leading_questions)
+        dump_path = options['dump_path']
+        dbname = options['dbname']
+        user = options['user']
 
-        # Store story structure
-        StoryStructure.objects.all().delete()  # clear existing data
-        story = StoryStructure.objects.create(
-            line=StoryTemplate().story_structure,
-            leading_question=leadobj
-        )
+        self.stdout.write(self.style.WARNING('Dropping all tables...'))
+        self.drop_and_create_database(dbname, user)
+        self.stdout.write(self.style.SUCCESS('All tables dropped successfully. And New Database created.'))
 
-        # Store AI illustration prompts
-        AiIllustrationPrompt.objects.all().delete()  # clear existing data
-        AiIllustrationPrompt.objects.create(
-            prompt=StoryTemplate().ai_illustration_prompts,
-            story=story
-        )
+        self.stdout.write(self.style.WARNING(f'Restoring database "{dbname}" from "{dump_path}"...'))
+        self.restore_database(dump_path, dbname, user)
 
-        self.stdout.write(self.style.SUCCESS('Successfully seeded data.'))
+# class Command(BaseCommand):
+#     help = 'Seed the database with initial data'
+
+#     def handle(self, *args, **options):
+#         # Store leading questions
+#         LeadingQuestion.objects.all().delete()  # clear existing data
+#         leadobj = LeadingQuestion.objects.create(data=StoryTemplate().leading_questions)
+
+#         # Store story structure
+#         StoryStructure.objects.all().delete()  # clear existing data
+#         story = StoryStructure.objects.create(
+#             line=StoryTemplate().story_structure,
+#             leading_question=leadobj
+#         )
+
+#         # Store AI illustration prompts
+#         AiIllustrationPrompt.objects.all().delete()  # clear existing data
+#         AiIllustrationPrompt.objects.create(
+#             prompt=StoryTemplate().ai_illustration_prompts,
+#             story=story
+#         )
+
+#         self.stdout.write(self.style.SUCCESS('Successfully seeded data.'))
+

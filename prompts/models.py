@@ -15,6 +15,9 @@ class StoryStructure(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class AiIllustrationPrompt(models.Model):
     prompt = models.JSONField()
@@ -36,4 +39,6 @@ class PromptRecord(models.Model):
         upload_to ='prompt_images/', null=True,
         blank=True, default=None
     )
+    email = models.CharField(max_length=500,null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 

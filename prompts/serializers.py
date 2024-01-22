@@ -38,7 +38,7 @@ class PromptRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = PromptRecord
         fields = (
-            "id", "prompt", "image",
+            "id", "prompt", "image","email","created_at"
         )
 
 
