@@ -804,6 +804,7 @@ COPY public.django_admin_log (id, action_time, object_id, object_repr, action_fl
 296	2024-01-22 09:26:14.934397+01	10	LeadingQuestion object (10)	3		9	5
 297	2024-01-22 11:43:42.836396+01	1	AiIllustrationPrompt object (1)	2	[{"changed": {"fields": ["Prompt"]}}]	8	5
 298	2024-01-22 11:56:02.900344+01	1	AiIllustrationPrompt object (1)	2	[{"changed": {"fields": ["Prompt"]}}]	8	5
+299	2024-01-22 14:54:23.608789+01	1	AiIllustrationPrompt object (1)	2	[{"changed": {"fields": ["Prompt"]}}]	8	5
 \.
 
 
@@ -878,6 +879,7 @@ bsa1q7nsyiwvmehzqcwhgme1c6b28d3h	.eJxVjDsOwjAQBe_iGlnejb-U9JzBWv9wANlSnFSIu0OkFN
 q77umffh0xl4hyneiwh88u6rmaqmlvvx	.eJxVjDsOwjAQBe_iGlnejb-U9JzBWv9wANlSnFSIu0OkFNC-mXkv5mlbq99GXvyc2JkBO_1ugeIjtx2kO7Vb57G3dZkD3xV-0MGvPeXn5XD_DiqN-q2zQTOBngBt0QVtSkWCztaRDsZIh84ZC4QuoZhIRVWEFcVCJqcAi2TvD7nrNs4:1qKQC6:WktBmzitH88tvap9NzyqSr-eBaPeCv9IcLbKFMjZRUQ	2023-07-28 23:19:18.291684+02
 tif7w2fwfb04v848vsg9jic1slck7pfo	.eJxVjEEOwiAQRe_C2hBGYCgu3XsGwsAgVUOT0q6MdzckXej2v_f-W4S4bzXsndcwZ3ERRpx-N4rpyW2A_Ijtvsi0tG2dSQ5FHrTL25L5dT3cv4Maex01A1hnIliNE7jiQCsmZR0q8GgyEFMhKtogGs4TeQ-KjMtnS4oxic8XxKo3bA:1rRTKF:BrpNCrL-vB1PDYJVZohfWl8jHx2HMPYOXeALxx3sQLg	2024-02-04 09:37:07.479302+01
 65481rsxeo2tn8zmy8r940rrxqrwfad8	.eJxVjEsOAiEQBe_C2hD5NIhL956BdDcgowaSYWZlvLtOMgvdvqp6LxFxXWpcR57jlMRZgDj8boT8yG0D6Y7t1iX3tswTyU2ROx3y2lN-Xnb376DiqN86By46F2X10cIJikpowQXwFshhMeR88KGwZfKWQDFqY8Akx0Fr8k68P-A6N4c:1rRoel:uoz6VY-bEJYluicAFgSZwH103GmrEaek6rPkCMfB1rY	2024-02-05 08:23:43.335911+01
+2p9z56yivteam11d9o1uy9hrpqoy73qa	.eJxVjEsOAiEQBe_C2hD5NIhL956BdDcgowaSYWZlvLtOMgvdvqp6LxFxXWpcR57jlMRZgDj8boT8yG0D6Y7t1iX3tswTyU2ROx3y2lN-Xnb376DiqN86By46F2X10cIJikpowQXwFshhMeR88KGwZfKWQDFqY8Akx0Fr8k68P-A6N4c:1rRujh:zWFV6WHOj721AKt7_bHC6sUi5jmdQdmxSxi0ro33Bg4	2024-02-05 14:53:13.933321+01
 \.
 
 
@@ -887,7 +889,7 @@ tif7w2fwfb04v848vsg9jic1slck7pfo	.eJxVjEEOwiAQRe_C2hBGYCgu3XsGwsAgVUOT0q6MdzckXe
 
 COPY public.prompts_aiillustrationprompt (id, prompt, created_at, is_active, story_id) FROM stdin;
 3	["{first_name} What is the character's first name?{animal} What kind of animal is the main character?"]	2023-05-31 11:45:46.708015+02	t	5
-1	["cartoon very happy {breed} dog named {character} holding {required_thing} far away in a beautiful sunset in the style of a coloring book illustration. all black and white", "{breed} dog {character} {activity} in {location} in front of the {landmark} in the style of a coloring book illustration", "{mean_character_type} stealing {required_thing} for {activity} outside of {landmark} in {location} in the style of a coloring book illustration black and white only", "cartoon {savior_creature} super hero really cool in the style of a coloring book illustration black and white only", "{mean_character_name} the {mean_character_type} running away from {breed} dog {character} and {savior} in {location} in the style of a coloring book illustration black and white only", "{character} and {savior} high-fiving in front of the {landmark} after retrieving the {required_thing} in the style of a coloring book illustration"]	2023-05-28 16:52:08.02739+02	t	1
+1	["cartoon very happy {breed} dog named {character} holding {required_thing} far away in a beautiful sunset in the style of a coloring book illustration. all black and white", "{breed} dog {character} {activity} in {location} in front of the {landmark} in the style of a coloring book illustration", "{mean_character_type} stealing {required_thing} for {activity} outside of {landmark} in {location} in the style of a coloring book illustration black and white only", "cartoon {savior_creature} super hero really cool in the style of a coloring book illustration black and white only", "{mean_character_name} the {mean_character_type} running away from {breed} dog {character} and {savior} in {location} in the style of a coloring book illustration black and white only", "{breed} dog {character} and savior {savior_creature} {savior} high-fiving in front of the {landmark} after retrieving the {required_thing} in the style of a coloring book illustration"]	2023-05-28 16:52:08.02739+02	t	1
 \.
 
 
@@ -1006,6 +1008,24 @@ COPY public.prompts_promptrecord (id, prompt, image, illustration_prompt_id, cre
 394	cat stealing leash for running outside of Statue of Liberty in New York City in the style of a coloring book illustration black and white only	prompt_images/prompt_1_nYSC2NM.jpg	1	2024-01-22 11:57:02.379784+01	rasealex000000@gmail.com
 396	Spike the cat running away from Golden Retriever dog Buddy and Max in New York City in the style of a coloring book illustration black and white only	prompt_images/prompt_1_x7hnfjx.jpg	1	2024-01-22 11:57:23.197181+01	rasealex000000@gmail.com
 397	Buddy and Max high-fiving in front of the Statue of Liberty after retrieving the leash in the style of a coloring book illustration	prompt_images/prompt_1_N0wtBUC.jpg	1	2024-01-22 11:57:34.976937+01	rasealex000000@gmail.com
+398	cartoon very happy German shepherd  dog named Tyson holding Jumping  far away in a beautiful sunset in the style of a coloring book illustration. all black and white	prompt_images/prompt_1_IeSQSq7.jpg	1	2024-01-22 14:44:09.480304+01	aayush@mailinator.com
+399	German shepherd  dog Tyson eating  in California (the ahwahnee) in front of the the ahwahnee  in the style of a coloring book illustration	prompt_images/prompt_1_udmAcwc.jpg	1	2024-01-22 14:44:20.503122+01	aayush@mailinator.com
+400	Cat stealing Jumping  for eating  outside of the ahwahnee  in California (the ahwahnee) in the style of a coloring book illustration black and white only	prompt_images/prompt_1_kBpm151.jpg	1	2024-01-22 14:44:31.595462+01	aayush@mailinator.com
+401	cartoon Dog super hero really cool in the style of a coloring book illustration black and white only	prompt_images/prompt_1_fcVRqss.jpg	1	2024-01-22 14:44:45.276425+01	aayush@mailinator.com
+402	Tom the Cat running away from German shepherd  dog Tyson and Bob in California (the ahwahnee) in the style of a coloring book illustration black and white only	prompt_images/prompt_1_0m6feKn.jpg	1	2024-01-22 14:44:55.994007+01	aayush@mailinator.com
+403	Tyson and Bob high-fiving in front of the the ahwahnee  after retrieving the Jumping  in the style of a coloring book illustration	prompt_images/prompt_1_sIUI3qD.jpg	1	2024-01-22 14:45:13.881211+01	aayush@mailinator.com
+404	cartoon very happy Labrador  dog named Tony holding eating  far away in a beautiful sunset in the style of a coloring book illustration. all black and white	prompt_images/prompt_1_hrPh0hY.jpg	1	2024-01-22 14:57:48.367725+01	aayush@mailinator.com
+405	Labrador  dog Tony eating  in New York (Statue of Liberty) in front of the Statue of Liberty  in the style of a coloring book illustration	prompt_images/prompt_1_M1Y2iZ0.jpg	1	2024-01-22 14:57:58.809449+01	aayush@mailinator.com
+406	Cat stealing eating  for eating  outside of Statue of Liberty  in New York (Statue of Liberty) in the style of a coloring book illustration black and white only	prompt_images/prompt_1_kPd8kmn.jpg	1	2024-01-22 14:58:09.021819+01	aayush@mailinator.com
+407	cartoon Bull dog super hero really cool in the style of a coloring book illustration black and white only	prompt_images/prompt_1_Myls3ul.jpg	1	2024-01-22 14:58:19.574487+01	aayush@mailinator.com
+408	Bob the Cat running away from Labrador  dog Tony and Tom in New York (Statue of Liberty) in the style of a coloring book illustration black and white only	prompt_images/prompt_1_43PWgeo.jpg	1	2024-01-22 14:58:30.080066+01	aayush@mailinator.com
+409	Labrador  dog Tony and savior Bull dog Tom high-fiving in front of the Statue of Liberty  after retrieving the eating  in the style of a coloring book illustration	prompt_images/prompt_1_U4tTK8t.jpg	1	2024-01-22 14:58:40.360804+01	aayush@mailinator.com
+410	cartoon very happy German shepherd  dog named Tyson holding leash far away in a beautiful sunset in the style of a coloring book illustration. all black and white	prompt_images/prompt_1_XjogGEp.jpg	1	2024-01-22 15:04:40.121189+01	aayush@mailinator.com
+411	German shepherd  dog Tyson eat in New York city in front of the statue of Liberty  in the style of a coloring book illustration	prompt_images/prompt_1_vHerDQy.jpg	1	2024-01-22 15:04:50.416653+01	aayush@mailinator.com
+412	cat stealing leash for eat outside of statue of Liberty  in New York city in the style of a coloring book illustration black and white only	prompt_images/prompt_1_MTsIUTq.jpg	1	2024-01-22 15:05:00.966835+01	aayush@mailinator.com
+413	cartoon Bull dog super hero really cool in the style of a coloring book illustration black and white only	prompt_images/prompt_1_LVuHFO8.jpg	1	2024-01-22 15:05:11.078127+01	aayush@mailinator.com
+414	Tom the cat running away from German shepherd  dog Tyson and Bob in New York city in the style of a coloring book illustration black and white only	prompt_images/prompt_1_MccD1hf.jpg	1	2024-01-22 15:05:21.706514+01	aayush@mailinator.com
+415	German shepherd  dog Tyson and savior Bull dog Bob high-fiving in front of the statue of Liberty  after retrieving the leash in the style of a coloring book illustration	prompt_images/prompt_1_jLtdtv2.jpg	1	2024-01-22 15:05:32.168466+01	aayush@mailinator.com
 \.
 
 
@@ -1028,7 +1048,7 @@ COPY public.user_user (id, password, last_login, is_superuser, first_name, last_
 3	pbkdf2_sha256$600000$WEtljoOEPTAhpkqye4hrbE$+lB+iAKlasVPHA0OuVYMfpP/35Mprji0uQz8UdCYY5E=	\N	t			t	t	2023-06-23 18:23:17.478602+02	test4@gmail.com
 1	pbkdf2_sha256$600000$fQ586j7KChph8oQXtWg4Vh$MkhiPLVITAS6q3rNqpFFOhFtfHfWyMKUFTZRXxoukE0=	2023-07-14 23:19:18.289196+02	t			t	t	2023-05-28 16:52:30.115581+02	superadmin@yopmail.com
 4	pbkdf2_sha256$600000$Pd5obx8IJD9u7HSTpDu32r$Ncw9RcjITDqJJXqOZGMx8/uOGHLHctIO9W21vUK/qEY=	2024-01-21 09:37:07.476858+01	t			t	t	2024-01-21 09:36:48.392539+01	admin@gmail.com
-5	pbkdf2_sha256$600000$fDaRVzOY7t1K7qMzHq0nu2$JMEvaHboIvqQeik+NVvJPLyyOvsojBiV0SDcFvhitiU=	2024-01-22 08:23:43.333425+01	t			t	t	2024-01-22 08:23:32.672865+01	admin@admin.com
+5	pbkdf2_sha256$600000$fDaRVzOY7t1K7qMzHq0nu2$JMEvaHboIvqQeik+NVvJPLyyOvsojBiV0SDcFvhitiU=	2024-01-22 14:53:13.930958+01	t			t	t	2024-01-22 08:23:32.672865+01	admin@admin.com
 \.
 
 
@@ -1073,7 +1093,7 @@ SELECT pg_catalog.setval('public.auth_permission_id_seq', 48, true);
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev1
 --
 
-SELECT pg_catalog.setval('public.django_admin_log_id_seq', 298, true);
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 299, true);
 
 
 --
@@ -1108,7 +1128,7 @@ SELECT pg_catalog.setval('public.prompts_leadingquestion_id_seq', 13, true);
 -- Name: prompts_promptrecord_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev1
 --
 
-SELECT pg_catalog.setval('public.prompts_promptrecord_id_seq', 397, true);
+SELECT pg_catalog.setval('public.prompts_promptrecord_id_seq', 415, true);
 
 
 --
