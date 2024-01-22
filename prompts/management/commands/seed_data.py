@@ -13,11 +13,6 @@ class Command(BaseCommand):
         parser.add_argument('--dbname', type=str, help='The database name', default=os.environ.get('NAME'))
         parser.add_argument('--user', type=str, help='The database user', default=os.environ.get('USER'))
 
-    def drop_and_create_database(self, db_name, db_user):
-        with connection.cursor() as cursor:
-            cursor.execute(f"CREATE DATABASE {db_name}")
-            cursor.execute(f"GRANT ALL ON DATABASE {db_name} TO {db_user}")
-
     def restore_database(self, dump_path, dbname=os.environ.get('NAME'), user=os.environ.get('USER')):
         restore_command = f'psql -U {user} -d {dbname} -f {dump_path}'
         try:
@@ -31,9 +26,6 @@ class Command(BaseCommand):
         dump_path = options['dump_path']
         dbname = options['dbname']
         user = options['user']
-
-        self.drop_and_create_database(dbname, user)
-        self.stdout.write(self.style.SUCCESS('New Database created.'))
 
         self.stdout.write(self.style.WARNING(f'Restoring database "{dbname}" from "{dump_path}"...'))
         self.restore_database(dump_path, dbname, user)
