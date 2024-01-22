@@ -12,14 +12,9 @@ class Command(BaseCommand):
         parser.add_argument('dump_path', type=str, help='The path to the dump file')
         parser.add_argument('--dbname', type=str, help='The database name', default=os.environ.get('NAME'))
         parser.add_argument('--user', type=str, help='The database user', default=os.environ.get('USER'))
-        # You can also add --host and --port arguments if needed
 
     def drop_and_create_database(self, db_name, db_user):
         with connection.cursor() as cursor:
-            try:
-                cursor.execute(f"DROP DATABASE {db_name}")
-            except:
-                pass
             cursor.execute(f"CREATE DATABASE {db_name}")
             cursor.execute(f"GRANT ALL ON DATABASE {db_name} TO {db_user}")
 
@@ -37,9 +32,8 @@ class Command(BaseCommand):
         dbname = options['dbname']
         user = options['user']
 
-        self.stdout.write(self.style.WARNING('Dropping all tables...'))
         self.drop_and_create_database(dbname, user)
-        self.stdout.write(self.style.SUCCESS('All tables dropped successfully. And New Database created.'))
+        self.stdout.write(self.style.SUCCESS('New Database created.'))
 
         self.stdout.write(self.style.WARNING(f'Restoring database "{dbname}" from "{dump_path}"...'))
         self.restore_database(dump_path, dbname, user)
