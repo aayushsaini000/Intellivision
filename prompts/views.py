@@ -316,7 +316,7 @@ from django.conf import settings
 
 def pdf_view(request, email):
     time_threshold = timezone.now() - timedelta(seconds=300)
-    records = PromptRecord.objects.filter(email=email, created_at__gt=time_threshold).order_by('-created_at').values('prompt', 'image')
+    records = PromptRecord.objects.filter(email=email, created_at__gt=time_threshold).order_by('created_at').values('prompt', 'image')
     # print("37333",list(records))
     # Assuming records are in the format you provided and images are accessible
     pdf = generate_pdf(list(records))
