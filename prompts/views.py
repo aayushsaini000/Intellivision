@@ -317,10 +317,8 @@ from django.conf import settings
 def pdf_view(request, email):
     time_threshold = timezone.now() - timedelta(seconds=300)
     records = PromptRecord.objects.filter(email=email, created_at__gt=time_threshold).order_by('created_at').values('prompt', 'image')
-    # print("37333",list(records))
     # Assuming records are in the format you provided and images are accessible
     pdf = generate_pdf(list(records))
-    # print("37666",pdf)
     # Email setup
     subject = 'Your story file'
     message = 'Please find attached the PDF of your Story.'
@@ -342,6 +340,18 @@ import io
 import os
 from django.conf import settings
 
+
+
+def fit_text(c, text, max_width):
+    line = ""
+    for word in text.split():
+        if c.stringWidth(line + word, 'Helvetica', 12) < max_width:
+            line += word + " "
+        else:
+            return line.strip(), text[len(line):].strip()
+    return line.strip(), ""
+
+
 def generate_pdf(records):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=letter)
@@ -349,10 +359,20 @@ def generate_pdf(records):
 
     x_offset = 50
     y_offset = height - 50
-    image_height = 150
+    image_height = 300
+    max_text_width = width - 2 * x_offset
 
     for record in records:
-        c.drawString(x_offset, y_offset, record['prompt'])
+        prompt = record['prompt']
+        lines = []
+        while prompt:
+            line, prompt = fit_text(c, prompt, max_text_width)
+            lines.append(line)
+
+        for line in lines:
+            c.drawString(x_offset, y_offset, line)
+            y_offset -= 20
+
         y_offset -= 20  # Adjust based on the height of your text
 
         image_path = os.path.join(settings.MEDIA_ROOT, record['image'])
@@ -367,10 +387,10 @@ def generate_pdf(records):
             y_offset -= (img.drawHeight + 20)  # Adjust for spacing between images
         except Exception as e:
             print(f"Error loading image {image_path}: {e}")
-
-        if y_offset < 100:  # Arbitrary threshold for page break
-            c.showPage()
-            y_offset = height - 50  # Reset y_offset for the new page
+        c.showPage()
+        # if y_offset < 100:  # Arbitrary threshold for page break
+        #     c.showPage()
+        y_offset = height - 50  # Reset y_offset for the new page
 
     c.save()
     buffer.seek(0)
