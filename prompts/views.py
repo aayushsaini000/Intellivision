@@ -49,11 +49,11 @@ class GeneratePicView(APIView):
         response_data = []
         try:
             for i, line in enumerate(story_structure.line[:len(ai_prompt.prompt)]):
-                generated_text = line.format(**user_inputs)
-                prompt = ai_prompt.prompt[i].format(**user_inputs)
-                # image_url = self.create_image(ai_prompt, generated_text)
+                formatted_prompt = ai_prompt.prompt[i].format(**user_inputs)
+                prompt = "From now on you are a color book artist, Who creates sketches for coloring books in black and white format, So people can fill colours. Your sketch should be based on the below prompt, \n " + formatted_prompt
+                
                 image_url = self.create_image(ai_prompt, prompt,email)
-                response_data.append({"prompt": prompt, "image": image_url})
+                response_data.append({"prompt": formatted_prompt, "image": image_url})
         except KeyError as e:
             return Response(
                 {
